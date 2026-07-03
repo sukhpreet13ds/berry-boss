@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Berry Boss - Growing Pure natural Goodness</title>
+    <link rel="stylesheet" href="style/style.css">
+    <link rel="shortcut icon" href="assets/berry.png" type="image/x-icon">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Animate.css Compatibility Mode -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.0.0/animate.compat.css" />
+    <style>
+        /* Farm Hero & Navbar Overrides */
+        .hero-container {
+            background: none;
+            position: relative;
+            height: 480px;
+            overflow: hidden;
+            display: block;
+        }
+
+        .hero-container::before,
+        .hero-container::after {
+            display: none !important;
+        }
+
+        .header {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 10;
+            background: linear-gradient(to bottom, rgba(255, 255, 255, 0.89) 0%, rgba(255, 255, 255, 0.582) 45%, rgba(255, 255, 255, 0) 100%);
+            padding: 0 48px;
+        }
+
+        .logo-wrapper {
+            border-bottom-right-radius: 36px;
+            padding: 16px 40px 24px 48px;
+            margin-left: -48px;
+        }
+
+        .contact-wrapper {
+            padding-top: 16px;
+        }
+
+        .hero-content {
+            padding-top: 0;
+            height: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+        }
+
+        .hero-image-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            padding: 0;
+        }
+
+        .hero-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-bottom-left-radius: 36px;
+            border-bottom-right-radius: 36px;
+        }
+
+        .hero-image-container::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(to top, rgba(0, 0, 0, 0.1) 0%, rgba(0, 0, 0, 0) 100%);
+            border-bottom-left-radius: 36px;
+            border-bottom-right-radius: 36px;
+            z-index: 2;
+            pointer-events: none;
+        }
+
+        .farm-title {
+            position: relative;
+            z-index: 5;
+            font-family: var(--font-baricolage);
+            font-size: 64px;
+            font-weight: 500;
+            color: var(--dark-text);
+            margin: 0;
+            padding-top: 60px;
+            /* Offset to center text with navbar present */
+        }
+
+        /* Responsive overrides */
+        @media (max-width: 1199px) {
+            .hero-container {
+                height: 400px;
+            }
+
+            .farm-title {
+                font-size: 64px;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .hero-container {
+                height: 320px;
+            }
+
+            .header {
+                padding: 16px 24px 0 24px;
+                background: none;
+                position: relative;
+                margin-bottom: 22px;
+            }
+
+            .logo-wrapper {
+                margin-left: 0;
+                padding: 0;
+                background: transparent;
+            }
+
+            .hero-content {
+                position: relative;
+                height: calc(100% - 80px);
+            }
+
+            .hero-image-container {
+                border-radius: 0 0 24px 24px;
+            }
+
+            .hero-image {
+                border-radius: 0 0 24px 24px;
+            }
+
+            .farm-title {
+                font-size: 34px;
+                padding-top: 0;
+                color: var(--white);
+                /* white text on image for mobile layout */
+                text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+            }
+
+            .hero-image-container::after {
+                background: rgba(0, 0, 0, 0.4);
+                border-radius: 0 0 24px 24px;
+            }
+
+            .leaf-bg {
+                width: 85%;
+            }
+
+            .circular-fresh-wrapper {
+                width: 65%;
+                border: 8px solid var(--white);
+            }
+        }
+
+        /* Food Safety Content Styles */
+        .food-safety-content p {
+            font-family: var(--font-dm-sans);
+            font-size: 18px;
+            line-height: 1.8;
+            color: #333333;
+            margin-bottom: 28px;
+            text-align: justify;
+        }
+
+        .food-safety-content ul {
+            list-style: none;
+            padding-left: 0;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .food-safety-content li {
+            position: relative;
+            padding-left: 32px;
+            font-family: var(--font-dm-sans);
+            font-size: 18px;
+            line-height: 1.6;
+            color: #2E332E;
+        }
+
+        .food-safety-content li::before {
+            content: "\f058";
+            /* FontAwesome circle-check icon */
+            font-family: "Font Awesome 6 Free";
+            font-weight: 900;
+            position: absolute;
+            left: 0;
+            top: 2px;
+            color: var(--button-outline);
+            font-size: 20px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="two-wrapper">
+
+        <div class="hero-container">
+            <!-- Header -->
+            <header class="header">
+                <div class="logo-wrapper">
+                    <a href="index.html"><img src="assets/berry-boss-logo.svg" alt="Berry Boss Logo" class="logo"></a>
+                </div>
+
+                <button class="mobile-menu-btn" aria-label="Toggle Menu">
+                    <i class="fa-solid fa-bars"></i>
+                </button>
+
+                <nav class="nav-links">
+                    <a href="index.html" class="nav-item  scroll-animate" data-animation="fadeInDown"
+                        data-delay="0.1s">Home</a>
+                    <a href="what-we-grow.html" class="nav-item scroll-animate" data-animation="fadeInDown"
+                        data-delay="0.2s">What We
+                        Grow</a>
+                    <a href="farm.html" class="nav-item scroll-animate" data-animation="fadeInDown"
+                        data-delay="0.3s">Our Farm</a>
+                    <a href="food-safety.html" class="nav-item scroll-animate" data-animation="fadeInDown"
+                        data-delay="0.4s">Food
+                        Safety</a>
+                    <a href="news.html" class="nav-item active scroll-animate" data-animation="fadeInDown"
+                        data-delay="0.5s">News</a>
+                    <a href="contact-us.html" class="nav-item scroll-animate" data-animation="fadeInDown"
+                        data-delay="0.6s">Contact
+                        us</a>
+                </nav>
+
+                <div class="contact-wrapper">
+                    <a href="tel:813-659-0577" class="phone-link">
+                        <span class="phone-icon-circle">
+                            <i class="fa-solid fa-phone"></i>
+                        </span>
+                        <span class="phone-number">813-659-0577</span>
+                    </a>
+                    <a href="contact-us.html" class="btn btn-red contact-btn">
+                        Contact Us <i class="fa-solid fa-arrow-right"></i>
+                    </a>
+                </div>
+            </header>
+
+            <!-- Mobile Drawer Menu -->
+            <div class="mobile-menu-drawer">
+                <button class="mobile-menu-close" aria-label="Close Menu">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+                <nav class="mobile-nav-links">
+                    <a href="index.html" class="mobile-nav-item">Home</a>
+                    <a href="what-we-grow.html" class="mobile-nav-item">What We Grow</a>
+                    <a href="farm.html" class="mobile-nav-item">Our Farm</a>
+                    <a href="food-safety.html" class="mobile-nav-item ">Food Safety</a>
+                    <a href="news.html" class="mobile-nav-item active">News</a>
+                    <a href="contact-us.html" class="mobile-nav-item">Contact us</a>
+                </nav>
+                <div class="mobile-contact-info">
+                    <a href="tel:813-659-0577" class="phone-link">
+                        <span class="phone-icon-circle">
+                            <i class="fa-solid fa-phone"></i>
+                        </span>
+                        <span class="phone-number">813-659-0577</span>
+                    </a>
+                    <a href="contact-us.html" class="btn btn-red contact-btn">
+                        Contact Us <i class="fa-solid fa-arrow-right"></i>
+                    </a>
+                </div>
+            </div>
+            <div class="mobile-menu-overlay"></div>
+
+            <!-- Hero Content -->
+            <section class="hero-content">
+                <h1 class="farm-title" style="color: #fff;">NEWS
+                </h1>
+                <!-- Hero Image Section -->
+                <div class="hero-image-container">
+                    <img src="assets/news-bg.jpg" alt="Strawberry Field" class="hero-image">
+                </div>
+            </section>
+        </div>
+    </div>
+
+    <section class="news-posts scroll-animate" data-animation="zoomIn" data-delay="0.2s">
+        <div class="news-container">
+            <div class="news-grid">
+                <!-- Card 1 -->
+                <a href="news-detail.html" class="news-card">
+                    <div class="news-card-img-wrapper">
+                        <img src="assets/post1.png" alt="Strawberry Harvest" class="news-card-img">
+                    </div>
+                    <span class="news-card-date">12-06-2026</span>
+                    <h3 class="news-card-title">Strawberry Harvest Season Officially Begins at Berry Boss Farm...</h3>
+                </a>
+                <!-- Card 2 -->
+                <a href="news-detail.html" class="news-card">
+                    <div class="news-card-img-wrapper">
+                        <img src="assets/post2.png" alt="Blackberry Crop" class="news-card-img">
+                    </div>
+                    <span class="news-card-date">12-06-2026</span>
+                    <h3 class="news-card-title">This Year's Blackberry Crop Shows Exceptional Quality</h3>
+                </a>
+                <!-- Card 3 -->
+                <a href="news-detail.html" class="news-card">
+                    <div class="news-card-img-wrapper">
+                        <img src="assets/post3.png" alt="Watermelons" class="news-card-img">
+                    </div>
+                    <span class="news-card-date">12-06-2026</span>
+                    <h3 class="news-card-title">How Watermelons Grow: A Farmer's Perspective</h3>
+                </a>
+                <!-- Card 4 -->
+                <a href="news-detail.html" class="news-card">
+                    <div class="news-card-img-wrapper">
+                        <img src="assets/post4.png" alt="Cantaloupe" class="news-card-img">
+                    </div>
+                    <span class="news-card-date">12-06-2026</span>
+                    <h3 class="news-card-title">How Farmers Know When a Cantaloupe Is Ready to Harvest</h3>
+                </a>
+                <!-- Card 5 -->
+                <a href="news-detail.html" class="news-card">
+                    <div class="news-card-img-wrapper">
+                        <img src="assets/post5.png" alt="Sustainable Farming" class="news-card-img">
+                    </div>
+                    <span class="news-card-date">12-06-2026</span>
+                    <h3 class="news-card-title">Sustainable Farming Practices That Protect Our Land</h3>
+                </a>
+                <!-- Card 6 -->
+                <a href="news-detail.html" class="news-card">
+                    <div class="news-card-img-wrapper">
+                        <img src="assets/post6.png" alt="Fresh Strawberries" class="news-card-img">
+                    </div>
+                    <span class="news-card-date">12-06-2026</span>
+                    <h3 class="news-card-title">Fresh Strawberries vs Frozen Strawberries: Which Is Better?</h3>
+                </a>
+                <!-- Card 7 -->
+                <a href="news-detail.html" class="news-card">
+                    <div class="news-card-img-wrapper">
+                        <img src="assets/post7.png" alt="Top 10 Fruits" class="news-card-img">
+                    </div>
+                    <span class="news-card-date">12-06-2026</span>
+                    <h3 class="news-card-title">Top 10 Fruits to Eat During Summer</h3>
+                </a>
+                <!-- Card 8 -->
+                <a href="news-detail.html" class="news-card">
+                    <div class="news-card-img-wrapper">
+                        <img src="assets/post8.png" alt="Recipes" class="news-card-img">
+                    </div>
+                    <span class="news-card-date">12-06-2026</span>
+                    <h3 class="news-card-title">Delicious Recipes Using Fresh Blackberries</h3>
+                </a>
+                <!-- Card 9 -->
+                <a href="news-detail.html" class="news-card">
+                    <div class="news-card-img-wrapper">
+                        <img src="assets/post9.png" alt="Difference" class="news-card-img">
+                    </div>
+                    <span class="news-card-date">12-06-2026</span>
+                    <h3 class="news-card-title">The Difference Between Farm-Fresh and Store-Bought Strawberries</h3>
+                </a>
+                <!-- Card 10 -->
+                <a href="news-detail.html" class="news-card">
+                    <div class="news-card-img-wrapper">
+                        <img src="assets/post10.png" alt="Record Harvest" class="news-card-img">
+                    </div>
+                    <span class="news-card-date">12-06-2026</span>
+                    <h3 class="news-card-title">Record Harvest Expected for This Year's Cantaloupe Crop</h3>
+                </a>
+            </div>
+        </div>
+    </section>
+
+
+    <!-- Brand Logos Section -->
+    <section class="berry-brand-section">
+        <div class="brand-container scroll-animate" data-animation="fadeIn">
+            <div class="brand-grid">
+                <div class="brand-card">
+                    <img src="assets/brand1.svg" alt="Fresh from Florida" class="brand-logo">
+                </div>
+                <div class="brand-card">
+                    <img src="assets/brand2.svg" alt="UF IFAS" class="brand-logo">
+                </div>
+                <div class="brand-card">
+                    <img src="assets/brand3.svg" alt="FFVA" class="brand-logo">
+                </div>
+                <div class="brand-card">
+                    <img src="assets/brand4.svg" alt="FSGA" class="brand-logo">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer Content Section -->
+    <footer class="berry-footer-content">
+        <div class="footer-top scroll-animate" data-animation="fadeInUp">
+            <div class="footer-col col-visit">
+                <span class="footer-label">Visit us</span>
+                <h3 class="footer-time">M-S 9:00am — 5:00pm</h3>
+            </div>
+
+            <div class="footer-col col-address">
+                <span class="footer-label">Address</span>
+                <p class="footer-text address-text">14506 Walden Sheffield<br>Road Dover FL 33527-5528</p>
+                <a href="https://maps.app.goo.gl/QT6qEXrpHHsRkCeNA" class="footer-map-link" target="_blank">View on Map
+                    <i class="fa-solid fa-arrow-right"></i></a>
+                <h3 class="footer-email"><a href="mailto:info@berryboss.com"
+                        style="color: inherit; text-decoration: none;">info@berryboss.com</a></h3>
+            </div>
+
+            <div class="footer-col col-socials">
+                <span class="footer-label">Socials</span>
+                <div class="social-capsules">
+                    <a href="#" class="social-btn">Facebook</a>
+                    <a href="#" class="social-btn">Instagram</a>
+                    <a href="#" class="social-btn">X</a>
+                    <a href="#" class="social-btn">Behance</a>
+                    <a href="#" class="social-btn">Youtube</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer End Banner Image with Overlaid natural badge -->
+        <div class="footer-banner-wrapper">
+            <button class="scroll-to-top-btn" id="scroll-to-top" aria-label="Scroll to top">
+                <i class="fa-solid fa-chevron-up"></i>
+            </button>
+            <img src="assets/footer-end.png" alt="Berry Boss Farm" class="footer-banner-img">
+            <img src="assets/footer-over.png" alt="100% Natural" class="footer-over-badge">
+        </div>
+    </footer>
+
+    <!-- Floating Sidebar Navigation -->
+    <div class="floating-sidebar" id="floating-sidebar">
+        <div class="sidebar-logo-wrapper">
+            <img src="assets/berry.png" alt="Berry Boss" class="sidebar-logo">
+        </div>
+        <nav class="sidebar-nav">
+            <a href="index.html" class="sidebar-item" data-target=".hero-container" data-tooltip="Home">
+                <i class="fa-solid fa-house"></i>
+            </a>
+            <a href="what-we-grow.html" class="sidebar-item" data-target=".berry-grow-product-section"
+                data-tooltip="Grow">
+                <i class="fa-solid fa-leaf"></i>
+            </a>
+            <a href="farm.html" class="sidebar-item" data-target="farm.html" data-tooltip="Farm">
+                <i class="fa-solid fa-tractor"></i>
+            </a>
+            <a href="food-safety.html" class="sidebar-item" data-target="food-safety.html" data-tooltip="Food Safety">
+                <i class="fa-solid fa-shield-halved"></i>
+            </a>
+            <a href="news.html" class="sidebar-item" data-target=".berry-gallery-section" data-tooltip="News">
+                <i class="fa-solid fa-newspaper"></i>
+            </a>
+            <a href="contact-us.html" class="sidebar-item" data-target=".berry-footer-content"
+                data-tooltip="Contact Us">
+                <i class="fa-solid fa-envelope"></i>
+            </a>
+        </nav>
+    </div>
+
+
+    <script src="script/script.js"></script>
+</body>
+
+</html>

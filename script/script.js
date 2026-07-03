@@ -295,15 +295,103 @@ document.addEventListener('DOMContentLoaded', () => {
         const sidebarItems = floatingSidebar.querySelectorAll('.sidebar-item');
         sidebarItems.forEach(item => {
             item.addEventListener('click', (e) => {
-                e.preventDefault();
-                const targetSelector = item.getAttribute('data-target');
-                const targetElement = document.querySelector(targetSelector);
-                if (targetElement) {
-                    targetElement.scrollIntoView({
-                        behavior: 'smooth',
-                        block: 'start'
-                    });
+                const href = item.getAttribute('href');
+                if (!href || href === '#') return;
+
+                const targetPage = href.split('/').pop().split('#')[0];
+                const currentPage = window.location.pathname.split('/').pop() || 'index.html';
+
+                const normTarget = targetPage === '' ? 'index.html' : targetPage;
+                const normCurrent = currentPage === '' ? 'index.html' : currentPage;
+
+                if (normTarget === normCurrent) {
+                    const targetSelector = item.getAttribute('data-target');
+                    if (targetSelector) {
+                        const targetElement = document.querySelector(targetSelector);
+                        if (targetElement) {
+                            e.preventDefault();
+                            targetElement.scrollIntoView({
+                                behavior: 'smooth',
+                                block: 'start'
+                            });
+                        }
+                    }
                 }
+            });
+        });
+
+        // Set active class on sidebar item based on current page url
+        const currentPath = window.location.pathname.split('/').pop() || 'index.html';
+        const normPath = currentPath === '' ? 'index.html' : currentPath;
+        sidebarItems.forEach(item => {
+            const href = item.getAttribute('href');
+            if (href) {
+                const targetPage = href.split('/').pop().split('#')[0];
+                const normTarget = targetPage === '' ? 'index.html' : targetPage;
+                if (normTarget === normPath || (normTarget === 'news.html' && normPath === 'news-detail.html')) {
+                    item.classList.add('active');
+                } else {
+                    item.classList.remove('active');
+                }
+            }
+        });
+    }
+
+    // Circular fresh image looping transition
+    const freshImages = document.querySelectorAll('.circular-fresh-wrapper .circular-fresh-img');
+    if (freshImages.length > 0) {
+        let currentIndex = 0;
+        setInterval(() => {
+            freshImages[currentIndex].classList.remove('active');
+            currentIndex = (currentIndex + 1) % freshImages.length;
+            freshImages[currentIndex].classList.add('active');
+        }, 3000);
+    }
+
+    // Grow section auto-slider with hover stop
+    const growSlides = document.querySelectorAll('.grow-slide');
+    const growIndicators = document.querySelectorAll('.grow-indicator');
+    const growContainer = document.querySelector('.grow-slider-container');
+    
+    if (growSlides.length > 0) {
+        let slideIndex = 0;
+        let slideInterval;
+        
+        const showSlide = (index) => {
+            growSlides.forEach((slide, i) => {
+                slide.classList.remove('active');
+                if (growIndicators[i]) {
+                    growIndicators[i].classList.remove('active');
+                }
+            });
+            growSlides[index].classList.add('active');
+            if (growIndicators[index]) {
+                growIndicators[index].classList.add('active');
+            }
+            slideIndex = index;
+        };
+        
+        const startAutoplay = () => {
+            slideInterval = setInterval(() => {
+                let nextIndex = (slideIndex + 1) % growSlides.length;
+                showSlide(nextIndex);
+            }, 4000);
+        };
+        
+        const stopAutoplay = () => {
+            clearInterval(slideInterval);
+        };
+        
+        startAutoplay();
+        
+        if (growContainer) {
+            growContainer.addEventListener('mouseenter', stopAutoplay);
+            growContainer.addEventListener('mouseleave', startAutoplay);
+        }
+        
+        growIndicators.forEach((indicator, index) => {
+            indicator.addEventListener('click', () => {
+                showSlide(index);
             });
         });
     }

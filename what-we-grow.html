@@ -11,6 +11,167 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Animate.css Compatibility Mode -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.0.0/animate.compat.css" />
+    <style>
+        /* Farm Hero & Navbar Overrides */
+        .hero-container {
+            background: none;
+            position: relative;
+            height: 480px;
+            overflow: hidden;
+            display: block;
+        }
+
+        .hero-container::before,
+        .hero-container::after {
+            display: none !important;
+        }
+
+        .header {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 10;
+            background: linear-gradient(to bottom, rgba(255, 255, 255, 0.747) 0%, rgba(255, 255, 255, 0.63) 45%, rgba(255, 255, 255, 0) 100%);
+            padding: 0 48px;
+        }
+
+        .logo-wrapper {
+            border-bottom-right-radius: 36px;
+            padding: 16px 40px 24px 48px;
+            margin-left: -48px;
+        }
+
+        .contact-wrapper {
+            padding-top: 16px;
+        }
+
+        .hero-content {
+            padding-top: 0;
+            height: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+        }
+
+        .hero-image-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            padding: 0;
+        }
+
+        .hero-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-bottom-left-radius: 36px;
+            border-bottom-right-radius: 36px;
+        }
+
+        .hero-image-container::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(to top, rgba(0, 0, 0, 0.1) 0%, rgba(0, 0, 0, 0) 100%);
+            border-bottom-left-radius: 36px;
+            border-bottom-right-radius: 36px;
+            z-index: 2;
+            pointer-events: none;
+        }
+
+        .farm-title {
+            position: relative;
+            z-index: 5;
+            font-family: var(--font-baricolage);
+            font-size: 64px;
+            font-weight: 500;
+            color: var(--dark-text);
+            margin: 0;
+            padding-top: 60px;
+            /* Offset to center text with navbar present */
+        }
+
+        .two-wrapper {
+            background-color: #F1EFDD;
+        }
+
+        /* Responsive overrides */
+        @media (max-width: 1199px) {
+            .hero-container {
+                height: 400px;
+            }
+
+            .farm-title {
+                font-size: 64px;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .hero-container {
+                height: 320px;
+            }
+
+            .header {
+                padding: 16px 24px 0 24px;
+                background: none;
+                position: relative;
+                margin-bottom: 22px;
+            }
+
+            .logo-wrapper {
+                margin-left: 0;
+                padding: 0;
+                background: transparent;
+            }
+
+            .hero-content {
+                position: relative;
+                height: calc(100% - 80px);
+            }
+
+            .hero-image-container {
+                border-radius: 0 0 24px 24px;
+            }
+
+            .hero-image {
+                border-radius: 0 0 24px 24px;
+            }
+
+            .farm-title {
+                font-size: 34px;
+                padding-top: 0;
+                color: var(--white);
+                /* white text on image for mobile layout */
+                text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+            }
+
+            .hero-image-container::after {
+                background: rgba(0, 0, 0, 0.4);
+                border-radius: 0 0 24px 24px;
+            }
+
+            .leaf-bg {
+                width: 85%;
+            }
+
+            .circular-fresh-wrapper {
+                width: 65%;
+                border: 8px solid var(--white);
+            }
+        }
+    </style>
 </head>
 
 <body>
@@ -28,14 +189,16 @@
                 </button>
 
                 <nav class="nav-links">
-                    <a href="index.html" class="nav-item active scroll-animate" data-animation="fadeInDown"
+                    <a href="index.html" class="nav-item scroll-animate" data-animation="fadeInDown"
                         data-delay="0.1s">Home</a>
-                    <a href="what-we-grow.html" class="nav-item scroll-animate" data-animation="fadeInDown"
-                        data-delay="0.2s">What We Grow</a>
+                    <a href="what-we-grow.html" class="nav-item active scroll-animate" data-animation="fadeInDown"
+                        data-delay="0.2s">What We
+                        Grow</a>
                     <a href="farm.html" class="nav-item scroll-animate" data-animation="fadeInDown"
                         data-delay="0.3s">Our Farm</a>
                     <a href="food-safety.html" class="nav-item scroll-animate" data-animation="fadeInDown"
-                        data-delay="0.4s">Food Safety</a>
+                        data-delay="0.4s">Food
+                        Safety</a>
                     <a href="news.html" class="nav-item scroll-animate" data-animation="fadeInDown"
                         data-delay="0.5s">News</a>
                     <a href="contact-us.html" class="nav-item scroll-animate" data-animation="fadeInDown"
@@ -62,8 +225,8 @@
                     <i class="fa-solid fa-xmark"></i>
                 </button>
                 <nav class="mobile-nav-links">
-                    <a href="index.html" class="mobile-nav-item active">Home</a>
-                    <a href="what-we-grow.html" class="mobile-nav-item">What We Grow</a>
+                    <a href="index.html" class="mobile-nav-item">Home</a>
+                    <a href="what-we-grow.html" class="mobile-nav-item active">What We Grow</a>
                     <a href="farm.html" class="mobile-nav-item">Our Farm</a>
                     <a href="food-safety.html" class="mobile-nav-item">Food Safety</a>
                     <a href="news.html" class="mobile-nav-item">News</a>
@@ -85,162 +248,14 @@
 
             <!-- Hero Content -->
             <section class="hero-content">
-                <div class="hero-text-section">
-                    <h1 class="hero-title scroll-animate" data-animation="fadeInUp" data-delay="0.2s">Growing pure
-                        natural goodness for a healthier tomorrow</h1>
-                    <p class="hero-subtitle scroll-animate" data-animation="fadeInUp" data-delay="0.4s">Growing premium
-                        strawberries, blackberries, watermelons, and cantaloupes with passion, sustainability, and
-                        generations of farming experience.</p>
-
-                    <div class="hero-actions scroll-animate" data-animation="fadeInUp" data-delay="0.6s">
-                        <a href="what-we-grow.html" class="btn btn-red">Explore Our Produce <i
-                                class="fa-solid fa-arrow-right"></i></a>
-                        <a href="farm.html" class="btn btn-outline">Visit the Farm <i
-                                class="fa-solid fa-arrow-right"></i></a>
-                    </div>
-                </div>
-
-                <!-- Big background text "Berry Boss" -->
-                <div class="bg-text-container">
-                    <span class="bg-text">Berry Boss</span>
-                </div>
-
+                <h1 class="farm-title" style="color: #fff;">WHAT WE GROW</h1>
                 <!-- Hero Image Section -->
                 <div class="hero-image-container">
-                    <img src="assets/berry-hero.png" alt="Strawberry Field" class="hero-image">
-                    <div class="scroll-indicator">
-                        <i class="fa-solid fa-arrow-down"></i>
-                        <span>Scroll to website</span>
-                    </div>
+                    <img src="assets/grow-bg.jpg" alt="Strawberry Field" class="hero-image">
                 </div>
             </section>
         </div>
     </div>
-
-    <!-- Our Story Section -->
-    <section class="berry-story-section">
-        <div class="story-container">
-            <div class="story-left scroll-animate" data-animation="fadeInLeft">
-                <span class="story-badge">OUR STORY</span>
-                <h2 class="story-title">Rooted in the Soil,<br>Grown with Heart</h2>
-                <div class="story-paragraphs">
-                    <p class="story-p">Berry Boss Farm was born from a simple belief: the best food comes from land
-                        that's cared for. For over two decades, our family has nurtured every row, every plant, and
-                        every harvest with patience and pride.</p>
-                    <p class="story-p">From spring strawberries to late-summer watermelons, our farm follows nature's
-                        rhythm — no shortcuts, no compromises.</p>
-                </div>
-                <a href="farm.html" class="btn btn-green">Read More</a>
-            </div>
-
-            <div class="story-right scroll-animate" data-animation="fadeInRight">
-                <div class="features-grid">
-                    <div class="feature-item">
-                        <div class="feature-icon-wrapper">
-                            <img src="assets/icon1.svg" alt="Sun Ripened Icon" class="feature-icon rotating-icon">
-                        </div>
-                        <h3 class="feature-title">Sun Ripened</h3>
-                        <p class="feature-desc">Every fruit picked at peak natural sweetness.</p>
-                    </div>
-
-                    <div class="feature-item">
-                        <div class="feature-icon-wrapper">
-                            <img src="assets/icon2.svg" alt="Sustainable Growing Icon" class="feature-icon">
-                        </div>
-                        <h3 class="feature-title">Sustainable Growing</h3>
-                        <p class="feature-desc">We protect the land for the next generation.</p>
-                    </div>
-
-                    <div class="feature-item">
-                        <div class="feature-icon-wrapper">
-                            <img src="assets/icon3.svg" alt="Community First Icon" class="feature-icon">
-                        </div>
-                        <h3 class="feature-title">Community First</h3>
-                        <p class="feature-desc">We sell direct, keeping freshness unmatched.</p>
-                    </div>
-
-                    <div class="feature-item">
-                        <div class="feature-icon-wrapper">
-                            <img src="assets/icon4.svg" alt="No Shortcuts Icon" class="feature-icon">
-                        </div>
-                        <h3 class="feature-title">No Shortcuts</h3>
-                        <p class="feature-desc">No artificial ripening, ever. Just honest farming.</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <section class="berry-about-section">
-        <div class="about-container scroll-animate" data-animation="fadeIn">
-            <!-- Images Row -->
-            <div class="about-images-row">
-                <!-- Left Slide: Transition one by one -->
-                <div class="about-left-slideshow" id="about-left-slideshow">
-                    <div class="left-slide active">
-                        <img src="assets/berry-about-left1.JPG" alt="Watermelon Harvest" class="left-slide-img">
-                        <div class="left-slide-caption">
-                            <div class="caption-line">Freshly Harvested</div>
-                            <div class="caption-line">Natural Watermelons</div>
-                            <div class="caption-line">Straight from the Fields</div>
-                        </div>
-                    </div>
-                    <div class="left-slide">
-                        <img src="assets/berry-about-left2.JPG" alt="Sweet Strawberries" class="left-slide-img">
-                        <div class="left-slide-caption">
-                            <div class="caption-line">Farm-Fresh Watermelons</div>
-                            <div class="caption-line">Sweet Juicy Watermelons</div>
-                            <div class="caption-line">Quality Checked Daily</div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Right Slide: Seamless Sliding Loop -->
-                <div class="about-right-slider">
-                    <div class="slider-wrapper" id="about-right-slider-wrapper">
-                        <div class="right-slide">
-                            <img src="assets/berry-slide1.png" alt="Strawberry Fields 1" class="right-slide-img">
-                        </div>
-                        <div class="right-slide">
-                            <img src="assets/berry-slide2.JPG" alt="Strawberry Fields 2" class="right-slide-img">
-                        </div>
-                        <div class="right-slide">
-                            <img src="assets/berry-slide3.png" alt="Strawberry Fields 3" class="right-slide-img">
-                        </div>
-                        <div class="right-slide">
-                            <img src="assets/berry-slide4.png" alt="Strawberry Fields 4" class="right-slide-img">
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Content Row -->
-            <div class="about-content-row scroll-animate" data-animation="fadeInUp" data-delay="0.2s">
-                <div class="content-col col-left">
-                    <span class="about-badge">ABOUT THE FARM</span>
-                    <h2 class="about-title">Rooted In<br>Quality Farming</h2>
-                </div>
-
-                <div class="content-col col-middle">
-                    <div class="col-divider-line"></div>
-                    <p class="about-p">For over three decades, BBI Produce has built a reputation as a trusted
-                        grower-owned producer and marketer of premium-quality fruit under the Berry Boss brand. What
-                        began in 1990 with just 85 acres of strawberries has grown into a thriving agricultural
-                        operation spanning more than 1,200 acres in Dover, Florida. Today, BBI Produce proudly
-                        cultivates strawberries, natural strawberries, blackberries, watermelons, and cantaloupes with a
-                        strong</p>
-                </div>
-
-                <div class="content-col col-right">
-                    <div class="col-divider-line"></div>
-                    <p class="about-p">commitment to freshness, quality, and sustainable farming practices. By combining
-                        generations of farming expertise with modern growing techniques, the company continues to
-                        provide exceptional produce to customers while maintaining the values, dedication, and passion
-                        that define the Berry Boss name.</p>
-                </div>
-            </div>
-        </div>
-    </section>
 
     <section class="berry-grow-product-section">
         <div class="product-container scroll-animate" data-animation="fadeIn">
@@ -348,11 +363,75 @@
             </div>
 
             <div class="product-action scroll-animate" data-animation="fadeInUp">
-                <a href="contact-us.html" class="btn btn-red">Contact The Farm <i class="fa-solid fa-arrow-right"></i></a>
+                <a href="contact-us.html" class="btn btn-red">Contact The Farm <i
+                        class="fa-solid fa-arrow-right"></i></a>
             </div>
         </div>
     </section>
 
+    <section class="grow-sliding-section">
+        <div class="grow-slider-container">
+            <div class="grow-slider-wrapper">
+
+                <!-- Slide 1 - Blackberry -->
+                <div class="grow-slide active">
+                    <img src="assets/grow-slide1.png" alt="Blackberry" class="grow-slide-img">
+                    <div class="grow-slide-content">
+                        <h3 class="grow-slide-title">Fresh Blackberries</h3>
+                        <p class="grow-slide-text">
+                            Handpicked at peak ripeness, our juicy blackberries deliver a perfect balance of sweetness
+                            and rich flavor while maintaining exceptional freshness.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Slide 2 - Strawberry -->
+                <div class="grow-slide">
+                    <img src="assets/grow-slide2.png" alt="Strawberry" class="grow-slide-img">
+                    <div class="grow-slide-content">
+                        <h3 class="grow-slide-title">Sweet Strawberries</h3>
+                        <p class="grow-slide-text">
+                            Grown with care under ideal conditions, our vibrant strawberries are naturally sweet,
+                            bursting with flavor, and packed with freshness in every bite.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Slide 3 - Muskmelon -->
+                <div class="grow-slide">
+                    <img src="assets/grow-slide3.png" alt="Muskmelon" class="grow-slide-img">
+                    <div class="grow-slide-content">
+                        <h3 class="grow-slide-title">Premium Muskmelon</h3>
+                        <p class="grow-slide-text">
+                            Carefully cultivated and vine-ripened, our muskmelons offer a refreshing aroma, tender
+                            texture, and naturally sweet taste perfect for every season.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Slide 4 - Watermelon -->
+                <div class="grow-slide">
+                    <img src="assets/grow-slide4.png" alt="Watermelon" class="grow-slide-img">
+                    <div class="grow-slide-content">
+                        <h3 class="grow-slide-title">Juicy Watermelon</h3>
+                        <p class="grow-slide-text">
+                            Harvested at the perfect moment, our watermelons are crisp, refreshingly juicy, and filled
+                            with naturally sweet flavor for a delicious summer experience.
+                        </p>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Slider Controls / Indicators -->
+            <div class="grow-slider-indicators">
+                <span class="grow-indicator active" data-slide="0"></span>
+                <span class="grow-indicator" data-slide="1"></span>
+                <span class="grow-indicator" data-slide="2"></span>
+                <span class="grow-indicator" data-slide="3"></span>
+            </div>
+        </div>
+    </section>
     <!-- Testimonials Section -->
     <section class="berry-testimonals-section">
         <div class="testimonials-container scroll-animate" data-animation="fadeIn" id="testimonials-section-container">
