@@ -64,7 +64,7 @@ export default function AdminLogin() {
 }
 
 export async function getServerSideProps({ req }) {
-  if (isAdmin(req)) {
+  if (await isAdmin(req)) {
     return { redirect: { destination: '/admin', permanent: false } };
   }
   return { props: {} };

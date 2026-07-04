@@ -165,7 +165,7 @@ const pageStyles = `
 `;
 
 export default function WhatWeGrow({ products }) {
-  const productTrack = [...products, ...products];
+  const productTrack = products;
 
   return (
     <>
@@ -179,8 +179,8 @@ export default function WhatWeGrow({ products }) {
           name="keywords"
           content="Berry Boss, fruit farms USA, fresh strawberries, muskmelons, watermelons, blackberries, premium fruit growers, sustainable farming, fresh produce, berry farm"
         />
-        <style dangerouslySetInnerHTML={{ __html: pageStyles }} />
       </Head>
+      <style dangerouslySetInnerHTML={{ __html: pageStyles }} />
 
       <div className="two-wrapper">
         <div className="hero-container">

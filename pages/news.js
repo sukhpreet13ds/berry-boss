@@ -213,8 +213,8 @@ export default function News({ newsList }) {
           name="keywords"
           content="Berry Boss, fruit farms USA, fresh strawberries, muskmelons, watermelons, blackberries, premium fruit growers, sustainable farming, fresh produce, berry farm"
         />
-        <style dangerouslySetInnerHTML={{ __html: pageStyles }} />
       </Head>
+      <style dangerouslySetInnerHTML={{ __html: pageStyles }} />
 
       <div className="two-wrapper">
         <div className="hero-container">
@@ -236,15 +236,26 @@ export default function News({ newsList }) {
       <section className="news-posts scroll-animate" data-animation="zoomIn" data-delay="0.2s">
         <div className="news-container">
           <div className="news-grid">
-            {newsList.map((item) => (
-              <a href={`/news-detail?id=${item.id}`} className="news-card" key={item.id}>
-                <div className="news-card-img-wrapper">
-                  <img src={item.image_url} alt={item.title} className="news-card-img" loading="lazy" decoding="async" />
-                </div>
-                <span className="news-card-date">{item.date}</span>
-                <h3 className="news-card-title">{item.title}</h3>
-              </a>
-            ))}
+             {newsList.map((item) => {
+               const limitWords = (str, num) => {
+                 if (!str) return 'Read the latest farm updates and seasonal harvest news from Berry Boss Farm...';
+                 const words = str.split(/\s+/).filter(Boolean);
+                 if (words.length <= num) return str;
+                 return words.slice(0, num).join(' ') + '...';
+               };
+               return (
+                 <a href={`/news-detail?id=${item.id}`} className="news-card" key={item.id}>
+                   <div className="news-card-img-wrapper">
+                     <img src={item.image_url} alt={item.title} className="news-card-img" loading="lazy" decoding="async" />
+                   </div>
+                   <span className="news-card-date">{item.date}</span>
+                   <h3 className="news-card-title">{item.title}</h3>
+                   <p className="news-card-desc" style={{ fontSize: '14px', color: '#55604f', marginTop: '10px', lineHeight: '1.5', textAlign: 'left' }}>
+                     {limitWords(item.content, 12)}
+                   </p>
+                 </a>
+               );
+             })}
           </div>
         </div>
       </section>

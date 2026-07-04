@@ -172,8 +172,8 @@ export default function Farm() {
           name="keywords"
           content="Berry Boss, fruit farms USA, fresh strawberries, muskmelons, watermelons, blackberries, premium fruit growers, sustainable farming, fresh produce, berry farm"
         />
-        <style dangerouslySetInnerHTML={{ __html: pageStyles }} />
       </Head>
+      <style dangerouslySetInnerHTML={{ __html: pageStyles }} />
 
       <div className="two-wrapper">
         <div className="hero-container">

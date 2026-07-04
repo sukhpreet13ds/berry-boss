@@ -3,7 +3,7 @@ import Header from '../components/Header';
 import { fetchProducts } from '../lib/queries';
 
 export default function Home({ products }) {
-  const productTrack = [...products, ...products];
+  const productTrack = products;
 
   return (
     <>

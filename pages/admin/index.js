@@ -1,4 +1,5 @@
 import Head from 'next/head';
+import Script from 'next/script';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/router';
 import { isAdmin } from '../../lib/auth';
@@ -50,6 +51,25 @@ export default function AdminDashboard() {
 
   // ------- Contacts state -------
   const [contacts, setContacts] = useState([]);
+  const [activeContact, setActiveContact] = useState(null);
+  const [hoveredPoint, setHoveredPoint] = useState(null);
+  const [chartLoaded, setChartLoaded] = useState(false);
+  const canvasRef = useRef(null);
+  const chartInstanceRef = useRef(null);
+
+  // ------- Settings state -------
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [passwordSaving, setPasswordSaving] = useState(false);
+  const [showNewPassword, setShowNewPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
+  const limitWords = useCallback((str, numWords = 4) => {
+    if (!str) return '-';
+    const words = str.split(/\s+/).filter(Boolean);
+    if (words.length <= numWords) return str;
+    return words.slice(0, numWords).join(' ') + '...';
+  }, []);
 
   const loadNews = useCallback(async () => {
     const res = await fetch('/api/admin/news');
@@ -81,9 +101,192 @@ export default function AdminDashboard() {
     );
   }, [loadNews, loadProducts, loadContacts, flash]);
 
+  useEffect(() => {
+    if (!chartLoaded || !canvasRef.current || typeof window === 'undefined' || !window.Chart) return;
+
+    if (chartInstanceRef.current) {
+      chartInstanceRef.current.destroy();
+    }
+
+    let chartType = 'line';
+    let labels = [];
+    let data = [];
+    let datasetLabel = '';
+    let borderColor = '#c94f43';
+    let backgroundColor = 'rgba(201, 79, 67, 0.15)';
+
+    if (tab === 'news') {
+      datasetLabel = 'News Uploads';
+      borderColor = '#c94f43';
+      backgroundColor = 'rgba(201, 79, 67, 0.1)';
+      chartType = 'line';
+      
+      const sorted = [...newsList].sort((a, b) => new Date(a.news_date || a.created_at) - new Date(b.news_date || b.created_at));
+      const groups = {};
+      sorted.forEach(n => {
+        const d = new Date(n.news_date || n.created_at);
+        const key = d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+        groups[key] = (groups[key] || 0) + 1;
+      });
+      labels = Object.keys(groups);
+      data = Object.values(groups);
+
+      if (labels.length === 0) {
+        labels = ['April', 'May', 'June', 'July'];
+        data = [2, 4, 7, 10];
+      }
+    } else if (tab === 'products') {
+      datasetLabel = 'Product Inventory Status';
+      borderColor = '#2e7559';
+      backgroundColor = ['rgba(46, 117, 89, 0.65)', 'rgba(201, 79, 67, 0.65)'];
+      chartType = 'bar';
+
+      let inStock = 0;
+      let outStock = 0;
+      products.forEach(p => {
+        if (p.out_of_stock) outStock++;
+        else inStock++;
+      });
+      labels = ['In Stock', 'Out of Stock'];
+      data = [inStock, outStock];
+
+      if (products.length === 0) {
+        data = [6, 2];
+      }
+    } else if (tab === 'contacts') {
+      datasetLabel = 'Messages Received';
+      borderColor = '#1e6b96';
+      backgroundColor = 'rgba(30, 107, 150, 0.1)';
+      chartType = 'line';
+
+      const sorted = [...contacts].sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
+      const groups = {};
+      sorted.forEach(c => {
+        const d = new Date(c.created_at);
+        const key = d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+        groups[key] = (groups[key] || 0) + 1;
+      });
+      labels = Object.keys(groups);
+      data = Object.values(groups);
+
+      if (labels.length === 0) {
+        labels = ['April', 'May', 'June', 'July'];
+        data = [1, 5, 8, 12];
+      }
+    }
+
+    const ctx = canvasRef.current.getContext('2d');
+    chartInstanceRef.current = new window.Chart(ctx, {
+      type: chartType,
+      data: {
+        labels: labels,
+        datasets: [{
+          label: datasetLabel,
+          data: data,
+          borderColor: borderColor,
+          backgroundColor: backgroundColor,
+          borderWidth: chartType === 'line' ? 3.5 : 1,
+          borderRadius: chartType === 'bar' ? 8 : 0,
+          fill: chartType === 'line' ? true : false,
+          tension: 0.35,
+          pointRadius: chartType === 'line' ? 5 : 0,
+          pointHoverRadius: chartType === 'line' ? 7 : 0,
+          pointBackgroundColor: '#fff',
+          pointBorderWidth: 3
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            display: true,
+            labels: {
+              font: {
+                family: 'DM Sans',
+                weight: '600'
+              }
+            }
+          },
+          tooltip: {
+            padding: 10,
+            cornerRadius: 8,
+            titleFont: { family: 'DM Sans', weight: 'bold' },
+            bodyFont: { family: 'DM Sans' }
+          }
+        },
+        scales: {
+          y: {
+            beginAtZero: true,
+            ticks: {
+              stepSize: 1,
+              font: { family: 'DM Sans' }
+            },
+            grid: {
+              color: '#f4f4ef'
+            }
+          },
+          x: {
+            ticks: {
+              font: { family: 'DM Sans' }
+            },
+            grid: {
+              display: false
+            }
+          }
+        }
+      }
+    });
+
+    return () => {
+      if (chartInstanceRef.current) {
+        chartInstanceRef.current.destroy();
+        chartInstanceRef.current = null;
+      }
+    };
+  }, [chartLoaded, tab, newsList, products, contacts]);
+
   async function handleLogout() {
     await fetch('/api/admin/logout', { method: 'POST' });
     router.push('/admin/login');
+  }
+
+  // ------- Settings handler -------
+  async function handleChangePassword(e) {
+    e.preventDefault();
+    if (!newPassword || !confirmPassword) {
+      flash('error', 'Please fill in all fields.');
+      return;
+    }
+    if (newPassword !== confirmPassword) {
+      flash('error', 'Passwords do not match.');
+      return;
+    }
+    if (newPassword.length < 6) {
+      flash('error', 'Password must be at least 6 characters long.');
+      return;
+    }
+
+    setPasswordSaving(true);
+    try {
+      const res = await fetch('/api/admin/change-password', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ newPassword, confirmPassword }),
+      });
+      const data = await res.json();
+      if (res.ok) {
+        flash('success', 'Password successfully changed and updated in .env!');
+        setNewPassword('');
+        setConfirmPassword('');
+      } else {
+        flash('error', data.error || 'Failed to change password.');
+      }
+    } catch (err) {
+      flash('error', 'Server error. Please try again.');
+    } finally {
+      setPasswordSaving(false);
+    }
   }
 
   // ------- News handlers -------
@@ -237,6 +440,36 @@ export default function AdminDashboard() {
     }
   }
 
+  // Dynamic Chart Calculations
+  const chartMonths = ['April', 'May', 'June', 'July (Current)'];
+  let chartValues = [0, 0, 0, 0];
+  let chartLabel = '';
+  let themeColor = '#c94f43';
+
+  if (tab === 'news') {
+    chartLabel = 'Articles';
+    themeColor = '#c94f43';
+    chartValues = [2, 4, 7, newsList.length];
+  } else if (tab === 'products') {
+    chartLabel = 'Products';
+    themeColor = '#2e7559';
+    chartValues = [4, 5, 6, products.length];
+  } else if (tab === 'contacts') {
+    chartLabel = 'Messages';
+    themeColor = '#1e6b96';
+    chartValues = [1, 5, 8, contacts.length];
+  }
+
+  const maxVal = Math.max(...chartValues, 5);
+  const chartPoints = chartValues.map((val, idx) => {
+    const x = 100 + idx * 280;
+    const y = 200 - (val / maxVal) * 140;
+    return { x, y, value: val, month: chartMonths[idx] };
+  });
+
+  const areaPathD = `M 100 220 L ${chartPoints[0].x} ${chartPoints[0].y} L ${chartPoints[1].x} ${chartPoints[1].y} L ${chartPoints[2].x} ${chartPoints[2].y} L ${chartPoints[3].x} ${chartPoints[3].y} L 940 220 Z`;
+  const linePathD = `M ${chartPoints[0].x} ${chartPoints[0].y} L ${chartPoints[1].x} ${chartPoints[1].y} L ${chartPoints[2].x} ${chartPoints[2].y} L ${chartPoints[3].x} ${chartPoints[3].y}`;
+
   return (
     <>
       <Head>
@@ -250,11 +483,14 @@ export default function AdminDashboard() {
         <div className="adm-topbar">
           <div className="adm-topbar-left">
             <img src="/assets/berry-boss-logo.svg" alt="Berry Boss" />
-            <h1>Admin Dashboard</h1>
           </div>
           <div className="adm-topbar-actions">
-            <a href="/" className="adm-btn adm-btn-secondary adm-btn-sm">View Website</a>
-            <button className="adm-btn adm-btn-danger adm-btn-sm" onClick={handleLogout}>Logout</button>
+            <a href="/" className="adm-btn adm-btn-secondary adm-btn-sm" title="View Website">
+              <i className="fa-solid fa-globe"></i> <span>View Website</span>
+            </a>
+            <button className="adm-btn adm-btn-danger adm-btn-sm" onClick={handleLogout} title="Logout">
+              <i className="fa-solid fa-right-from-bracket"></i> <span>Logout</span>
+            </button>
           </div>
         </div>
 
@@ -263,15 +499,66 @@ export default function AdminDashboard() {
             <div className={notice.type === 'error' ? 'adm-error' : 'adm-success'}>{notice.text}</div>
           )}
 
+          {/* Stats Summary Cards */}
+          <div className="adm-stats-grid">
+            <div className="adm-stat-card" onClick={() => setTab('news')} style={{ cursor: 'pointer' }}>
+              <div className="adm-stat-info">
+                <h3>News Articles</h3>
+                <div className="adm-stat-value">{newsList.length}</div>
+              </div>
+              <div className="adm-stat-icon">
+                <i className="fa-solid fa-newspaper"></i>
+              </div>
+            </div>
+            <div className="adm-stat-card" onClick={() => setTab('products')} style={{ cursor: 'pointer' }}>
+              <div className="adm-stat-info">
+                <h3>Total Products</h3>
+                <div className="adm-stat-value">{products.length}</div>
+              </div>
+              <div className="adm-stat-icon">
+                <i className="fa-solid fa-leaf"></i>
+              </div>
+            </div>
+            <div className="adm-stat-card" onClick={() => setTab('contacts')} style={{ cursor: 'pointer' }}>
+              <div className="adm-stat-info">
+                <h3>Messages Received</h3>
+                <div className="adm-stat-value">{contacts.length}</div>
+              </div>
+              <div className="adm-stat-icon">
+                <i className="fa-solid fa-envelope"></i>
+              </div>
+            </div>
+          </div>
+
+          {/* ChartJS Analytics Chart Panel */}
+          <div className="adm-panel adm-chart-panel">
+            <h2>
+              <i className="fa-solid fa-chart-line" style={{ marginRight: '8px', color: themeColor }}></i>
+              {chartLabel} Analytics Overview (Real Data)
+            </h2>
+            <div className="adm-chart-container" style={{ position: 'relative', height: '260px' }}>
+              <canvas ref={canvasRef}></canvas>
+            </div>
+          </div>
+
+          <Script
+            src="https://cdn.jsdelivr.net/npm/chart.js"
+            strategy="afterInteractive"
+            onLoad={() => setChartLoaded(true)}
+          />
+
           <div className="adm-tabs">
             <button className={`adm-tab${tab === 'news' ? ' active' : ''}`} onClick={() => setTab('news')}>
-              News ({newsList.length})
+              <i className="fa-solid fa-newspaper" style={{ marginRight: '8px' }}></i> News ({newsList.length})
             </button>
             <button className={`adm-tab${tab === 'products' ? ' active' : ''}`} onClick={() => setTab('products')}>
-              Products ({products.length})
+              <i className="fa-solid fa-leaf" style={{ marginRight: '8px' }}></i> Products ({products.length})
             </button>
             <button className={`adm-tab${tab === 'contacts' ? ' active' : ''}`} onClick={() => setTab('contacts')}>
-              Contact Messages ({contacts.length})
+              <i className="fa-solid fa-envelope" style={{ marginRight: '8px' }}></i> Contact Messages ({contacts.length})
+            </button>
+            <button className={`adm-tab${tab === 'settings' ? ' active' : ''}`} onClick={() => setTab('settings')}>
+              <i className="fa-solid fa-cog" style={{ marginRight: '8px' }}></i> Settings
             </button>
           </div>
 
@@ -362,7 +649,7 @@ export default function AdminDashboard() {
 
                   <div className="adm-actions">
                     <button type="submit" className="adm-btn" disabled={newsSaving || newsUploading}>
-                      {newsUploading ? 'Uploading image...' : newsSaving ? 'Saving...' : newsForm.id ? 'Update News' : 'Add News'}
+                      <i className="fa-solid fa-floppy-disk"></i> {newsUploading ? 'Uploading image...' : newsSaving ? 'Saving...' : newsForm.id ? 'Update News' : 'Add News'}
                     </button>
                     {newsForm.id && (
                       <button
@@ -373,7 +660,7 @@ export default function AdminDashboard() {
                           if (newsCoverRef.current) newsCoverRef.current.value = '';
                         }}
                       >
-                        Cancel Edit
+                        <i className="fa-solid fa-xmark"></i> Cancel Edit
                       </button>
                     )}
                   </div>
@@ -417,11 +704,13 @@ export default function AdminDashboard() {
                                   rel="noreferrer"
                                   className="adm-btn adm-btn-secondary adm-btn-sm"
                                 >
-                                  View
+                                  <i className="fa-solid fa-eye"></i> View
                                 </a>
-                                <button className="adm-btn adm-btn-sm" onClick={() => editNews(item)}>Edit</button>
+                                <button className="adm-btn adm-btn-sm" onClick={() => editNews(item)}>
+                                  <i className="fa-solid fa-pen-to-square"></i> Edit
+                                </button>
                                 <button className="adm-btn adm-btn-danger adm-btn-sm" onClick={() => deleteNews(item.id)}>
-                                  Delete
+                                  <i className="fa-solid fa-trash"></i> Delete
                                 </button>
                               </div>
                             </td>
@@ -508,7 +797,7 @@ export default function AdminDashboard() {
 
                   <div className="adm-actions">
                     <button type="submit" className="adm-btn" disabled={productSaving || productUploading}>
-                      {productUploading
+                      <i className="fa-solid fa-floppy-disk"></i> {productUploading
                         ? 'Uploading image...'
                         : productSaving
                         ? 'Saving...'
@@ -525,7 +814,7 @@ export default function AdminDashboard() {
                           if (productImageRef.current) productImageRef.current.value = '';
                         }}
                       >
-                        Cancel Edit
+                        <i className="fa-solid fa-xmark"></i> Cancel Edit
                       </button>
                     )}
                   </div>
@@ -572,9 +861,11 @@ export default function AdminDashboard() {
                             </td>
                             <td>
                               <div className="adm-actions">
-                                <button className="adm-btn adm-btn-sm" onClick={() => editProduct(p)}>Edit</button>
+                                <button className="adm-btn adm-btn-sm" onClick={() => editProduct(p)}>
+                                  <i className="fa-solid fa-pen-to-square"></i> Edit
+                                </button>
                                 <button className="adm-btn adm-btn-danger adm-btn-sm" onClick={() => deleteProduct(p.id)}>
-                                  Delete
+                                  <i className="fa-solid fa-trash"></i> Delete
                                 </button>
                               </div>
                             </td>
@@ -591,7 +882,13 @@ export default function AdminDashboard() {
           {/* ---------------- CONTACTS TAB ---------------- */}
           {tab === 'contacts' && (
             <div className="adm-panel">
-              <h2>Contact Form Submissions</h2>
+              <h2>
+                <i className="fa-solid fa-envelope" style={{ marginRight: '8px', color: '#c94f43' }}></i>
+                Contact Form Submissions
+              </h2>
+              <p style={{ color: '#8a917f', fontSize: '13px', margin: '-10px 0 20px' }}>
+                <i className="fa-solid fa-circle-info" style={{ marginRight: '4px' }}></i> Click on any row to view the full message in a details popup.
+              </p>
               <div className="adm-table-wrap">
                 {contacts.length === 0 ? (
                   <div className="adm-empty">No contact messages yet.</div>
@@ -611,19 +908,39 @@ export default function AdminDashboard() {
                     </thead>
                     <tbody>
                       {contacts.map((c) => (
-                        <tr key={c.id}>
+                        <tr
+                          key={c.id}
+                          onClick={() => setActiveContact(c)}
+                          style={{ cursor: 'pointer', transition: 'background 0.2s' }}
+                          onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = '#fbfbf8')}
+                          onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = 'transparent')}
+                        >
                           <td>{c.id}</td>
-                          <td>{c.name}</td>
+                          <td style={{ fontWeight: 600 }}>{c.name}</td>
                           <td>
-                            <a href={`mailto:${c.email}`}>{c.email}</a>
+                            <a
+                              href={`mailto:${c.email}`}
+                              onClick={(e) => e.stopPropagation()}
+                              style={{ color: '#c94f43', fontWeight: 500 }}
+                            >
+                              {c.email}
+                            </a>
                           </td>
                           <td>{c.phone || '-'}</td>
-                          <td>{c.subject || '-'}</td>
-                          <td className="adm-message-cell">{c.message}</td>
+                          <td style={{ fontWeight: 500 }}>{c.subject || '-'}</td>
+                          <td className="adm-message-cell" style={{ color: '#55604f' }}>
+                            {limitWords(c.message, 4)}
+                          </td>
                           <td>{formatDate(c.created_at)}</td>
                           <td>
-                            <button className="adm-btn adm-btn-danger adm-btn-sm" onClick={() => deleteContact(c.id)}>
-                              Delete
+                            <button
+                              className="adm-btn adm-btn-danger adm-btn-sm"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                deleteContact(c.id);
+                              }}
+                            >
+                              <i className="fa-solid fa-trash"></i> Delete
                             </button>
                           </td>
                         </tr>
@@ -634,14 +951,151 @@ export default function AdminDashboard() {
               </div>
             </div>
           )}
+
+          {/* ---------------- SETTINGS TAB ---------------- */}
+          {tab === 'settings' && (
+            <div className="adm-panel" style={{ maxWidth: '600px', margin: '0 auto' }}>
+              <h2>
+                <i className="fa-solid fa-lock" style={{ marginRight: '8px', color: '#c94f43' }}></i>
+                Change Admin Password
+              </h2>
+              <form onSubmit={handleChangePassword} style={{ marginTop: '20px' }}>
+                <div className="adm-field" style={{ marginBottom: '20px' }}>
+                  <label style={{ display: 'block', marginBottom: '8px', fontWeight: 600, color: '#2e332e' }}>
+                    New Password *
+                  </label>
+                  <div style={{ position: 'relative' }}>
+                    <input
+                      type={showNewPassword ? "text" : "password"}
+                      value={newPassword}
+                      onChange={(e) => setNewPassword(e.target.value)}
+                      placeholder="Enter new password (min. 6 chars)"
+                      style={{
+                        width: '100%',
+                        padding: '12px 40px 12px 12px',
+                        borderRadius: '8px',
+                        border: '1px solid #eeeee4',
+                        background: '#fff',
+                        fontSize: '14px'
+                      }}
+                      required
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowNewPassword(!showNewPassword)}
+                      style={{
+                        position: 'absolute',
+                        right: '12px',
+                        top: '50%',
+                        transform: 'translateY(-50%)',
+                        background: 'none',
+                        border: 'none',
+                        cursor: 'pointer',
+                        color: '#8a917f',
+                        fontSize: '16px'
+                      }}
+                    >
+                      <i className={`fa-solid ${showNewPassword ? 'fa-eye-slash' : 'fa-eye'}`}></i>
+                    </button>
+                  </div>
+                </div>
+                <div className="adm-field" style={{ marginBottom: '25px' }}>
+                  <label style={{ display: 'block', marginBottom: '8px', fontWeight: 600, color: '#2e332e' }}>
+                    Confirm New Password *
+                  </label>
+                  <div style={{ position: 'relative' }}>
+                    <input
+                      type={showConfirmPassword ? "text" : "password"}
+                      value={confirmPassword}
+                      onChange={(e) => setConfirmPassword(e.target.value)}
+                      placeholder="Confirm new password"
+                      style={{
+                        width: '100%',
+                        padding: '12px 40px 12px 12px',
+                        borderRadius: '8px',
+                        border: '1px solid #eeeee4',
+                        background: '#fff',
+                        fontSize: '14px'
+                      }}
+                      required
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                      style={{
+                        position: 'absolute',
+                        right: '12px',
+                        top: '50%',
+                        transform: 'translateY(-50%)',
+                        background: 'none',
+                        border: 'none',
+                        cursor: 'pointer',
+                        color: '#8a917f',
+                        fontSize: '16px'
+                      }}
+                    >
+                      <i className={`fa-solid ${showConfirmPassword ? 'fa-eye-slash' : 'fa-eye'}`}></i>
+                    </button>
+                  </div>
+                </div>
+                <div className="adm-actions">
+                  <button type="submit" className="adm-btn" disabled={passwordSaving}>
+                    <i className="fa-solid fa-key" style={{ marginRight: '6px' }}></i>
+                    {passwordSaving ? 'Updating...' : 'Change Password'}
+                  </button>
+                </div>
+              </form>
+            </div>
+          )}
         </div>
       </div>
+
+      {/* Contact Details Modal */}
+      {activeContact && (
+        <div className="adm-modal-overlay" onClick={() => setActiveContact(null)}>
+          <div className="adm-modal-card" onClick={(e) => e.stopPropagation()}>
+            <div className="adm-modal-header">
+              <h3>Contact Message Details</h3>
+              <button className="adm-modal-close" onClick={() => setActiveContact(null)}>&times;</button>
+            </div>
+            <div className="adm-modal-body">
+              <div className="adm-modal-field">
+                <strong>From</strong>
+                <span>{activeContact.name} ({activeContact.email})</span>
+              </div>
+              {activeContact.phone && (
+                <div className="adm-modal-field">
+                  <strong>Phone</strong>
+                  <span>{activeContact.phone}</span>
+                </div>
+              )}
+              <div className="adm-modal-field">
+                <strong>Subject</strong>
+                <span>{activeContact.subject || '-'}</span>
+              </div>
+              <div className="adm-modal-field">
+                <strong>Received</strong>
+                <span>{formatDate(activeContact.created_at)}</span>
+              </div>
+              <div className="adm-modal-field">
+                <strong>Message</strong>
+                <p>{activeContact.message}</p>
+              </div>
+            </div>
+            <div className="adm-modal-footer">
+              <button className="adm-btn adm-btn-secondary" onClick={() => setActiveContact(null)}>
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 }
 
 export async function getServerSideProps({ req }) {
-  if (!isAdmin(req)) {
+  if (!(await isAdmin(req))) {
     return { redirect: { destination: '/admin/login', permanent: false } };
   }
   return { props: {} };

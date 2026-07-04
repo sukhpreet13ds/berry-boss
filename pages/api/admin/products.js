@@ -2,7 +2,7 @@ const { getDb } = require('../../../lib/db');
 const { requireAdmin } = require('../../../lib/auth');
 
 export default async function handler(req, res) {
-  if (!requireAdmin(req, res)) return;
+  if (!(await requireAdmin(req, res))) return;
 
   try {
     const db = await getDb();

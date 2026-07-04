@@ -214,19 +214,19 @@ function DynamicArticle({ article }) {
 
   return (
     <div className="news-detail-container">
+      {/* Wide Content Image (Rendered above content) */}
+      {article.image_url && (
+        <div className="blog-wide-image-wrapper">
+          <img src={article.image_url} alt={article.title} className="blog-wide-img" loading="lazy" decoding="async" />
+        </div>
+      )}
+
       {/* Intro Paragraphs */}
       {introParagraphs.length > 0 && (
         <div className="blog-intro">
           {introParagraphs.map((p, i) => (
             <p key={i}>{p}</p>
           ))}
-        </div>
-      )}
-
-      {/* Wide Content Image */}
-      {article.image_url && (
-        <div className="blog-wide-image-wrapper">
-          <img src={article.image_url} alt={article.title} className="blog-wide-img" loading="lazy" decoding="async" />
         </div>
       )}
 
@@ -240,11 +240,13 @@ function DynamicArticle({ article }) {
       )}
 
       {/* Inside Images uploaded with the news */}
-      {(article.images || []).map((url, i) => (
-        <div className="blog-wide-image-wrapper" key={i}>
-          <img src={url} alt={`${article.title} - image ${i + 1}`} className="blog-wide-img" loading="lazy" decoding="async" />
-        </div>
-      ))}
+      {(article.images || [])
+        .filter((url) => url !== article.image_url)
+        .map((url, i) => (
+          <div className="blog-wide-image-wrapper" key={i}>
+            <img src={url} alt={`${article.title} - image ${i + 1}`} className="blog-wide-img" loading="lazy" decoding="async" />
+          </div>
+        ))}
     </div>
   );
 }
@@ -421,8 +423,8 @@ export default function NewsDetail({ article }) {
           name="keywords"
           content="Berry Boss, fruit farms USA, fresh strawberries, muskmelons, watermelons, blackberries, premium fruit growers, sustainable farming, fresh produce, berry farm"
         />
-        <style dangerouslySetInnerHTML={{ __html: pageStyles }} />
       </Head>
+      <style dangerouslySetInnerHTML={{ __html: pageStyles }} />
 
       <div className="two-wrapper">
         <div className="hero-container">
@@ -436,7 +438,7 @@ export default function NewsDetail({ article }) {
             {/* Hero Image Section */}
             <div className="hero-image-container">
               <img
-                src={article && article.image_url ? article.image_url : '/assets/news-detail-bg.jpg'}
+                src="/assets/news-detail-bg.jpg"
                 alt="Strawberry Field"
                 className="hero-image"
                 decoding="async"
