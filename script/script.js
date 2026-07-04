@@ -375,7 +375,7 @@ document.addEventListener('DOMContentLoaded', () => {
             slideInterval = setInterval(() => {
                 let nextIndex = (slideIndex + 1) % growSlides.length;
                 showSlide(nextIndex);
-            }, 4000);
+            }, 2500);
         };
         
         const stopAutoplay = () => {
