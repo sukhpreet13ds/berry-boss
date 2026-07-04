@@ -292,17 +292,20 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
 
+        // Normalize page names so both "/farm" and "farm.html" style URLs match
+        const normalizePage = (p) => {
+            p = (p || '').split('/').pop().split('#')[0].split('?')[0].replace('.html', '');
+            return p === '' ? 'index' : p;
+        };
+
         const sidebarItems = floatingSidebar.querySelectorAll('.sidebar-item');
         sidebarItems.forEach(item => {
             item.addEventListener('click', (e) => {
                 const href = item.getAttribute('href');
                 if (!href || href === '#') return;
 
-                const targetPage = href.split('/').pop().split('#')[0];
-                const currentPage = window.location.pathname.split('/').pop() || 'index.html';
-
-                const normTarget = targetPage === '' ? 'index.html' : targetPage;
-                const normCurrent = currentPage === '' ? 'index.html' : currentPage;
+                const normTarget = normalizePage(href);
+                const normCurrent = normalizePage(window.location.pathname);
 
                 if (normTarget === normCurrent) {
                     const targetSelector = item.getAttribute('data-target');
@@ -321,14 +324,12 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 
         // Set active class on sidebar item based on current page url
-        const currentPath = window.location.pathname.split('/').pop() || 'index.html';
-        const normPath = currentPath === '' ? 'index.html' : currentPath;
+        const normPath = normalizePage(window.location.pathname);
         sidebarItems.forEach(item => {
             const href = item.getAttribute('href');
             if (href) {
-                const targetPage = href.split('/').pop().split('#')[0];
-                const normTarget = targetPage === '' ? 'index.html' : targetPage;
-                if (normTarget === normPath || (normTarget === 'news.html' && normPath === 'news-detail.html')) {
+                const normTarget = normalizePage(href);
+                if (normTarget === normPath || (normTarget === 'news' && normPath === 'news-detail')) {
                     item.classList.add('active');
                 } else {
                     item.classList.remove('active');
